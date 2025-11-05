@@ -21,7 +21,7 @@ state_mapping = {
 }
 
 # --- Page setup ---
-st.set_page_config(page_title="Indian Startup Profit Predictor", layout="centered")
+st.set_page_config(page_title=" Startup Profit Predictor", layout="centered")
 st.title("🇮🇳 Startup Profit Predictor")
 st.markdown("Predict your startup's profit based on expenses and **Indian state location**.")
 
@@ -74,6 +74,7 @@ st.pyplot(fig)
 # ---------- FOOTER ----------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor using Streamlit and Machine Learning")
+
 
 
 
