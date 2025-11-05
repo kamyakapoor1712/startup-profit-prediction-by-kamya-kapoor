@@ -22,7 +22,7 @@ if st.button("Predict Profit 💰"):
         state_encoded = state_mapping[state]
         input_data = np.array([[rd_spend, admin_spend, marketing_spend, state_encoded]])
         predicted_profit = model.predict(input_data)[0]
-        st.success(f"**Predicted Profit:** ${predicted_profit:,.2f}")
+        st.success(f"**Predicted Profit:** ₹{predicted_profit:,.2f}")
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
@@ -33,7 +33,8 @@ values = [rd_spend, admin_spend, marketing_spend]
 
 fig, ax = plt.subplots()
 ax.bar(features, values, color=["#4CAF50", "#FF9800", "#2196F3"])
-ax.set_ylabel("Amount ($)")
+ax.set_ylabel("Amount (₹)")
 st.pyplot(fig)
+
 
 
