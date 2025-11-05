@@ -6,13 +6,25 @@ import matplotlib.pyplot as plt
 # Load trained model
 model = joblib.load("mlr_predictor.joblib")
 
-# State label encoding
-state_mapping = {"California": 0, "Florida": 1, "New York": 2}
+ # --- State label encoding (Indian States) ---
+state_mapping = {
+    "Maharashtra": 0,
+    "Karnataka": 1,
+    "Delhi NCR": 2,
+    "Gujarat": 3,
+    "Tamil Nadu": 4,
+    "Telangana": 5,
+    "West Bengal": 6,
+    "Uttar Pradesh": 7,
+    "Kerala": 8,
+    "Rajasthan": 9
+}
 
 # --- Page setup ---
-st.set_page_config(page_title="Startup Profit Predictor", layout="centered")
-st.title("💼 Startup Profit Predictor")
-st.markdown("Predict your startup's profit based on expenses and location.")
+st.set_page_config(page_title="Indian Startup Profit Predictor", layout="centered")
+st.title("🇮🇳 Startup Profit Predictor")
+st.markdown("Predict your startup's profit based on expenses and **Indian state location**.")
+
 
 # ---------- INPUT SECTION ----------
 st.subheader("Enter Business Details")
@@ -62,6 +74,7 @@ st.pyplot(fig)
 # ---------- FOOTER ----------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor using Streamlit and Machine Learning")
+
 
 
 
