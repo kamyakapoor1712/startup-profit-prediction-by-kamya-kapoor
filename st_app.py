@@ -6,10 +6,21 @@ import numpy as np
 model = joblib.load("mlr_predictor.joblib")
 
 # State encoding
-state_mapping = {"California": 0, "Florida": 1, "New York": 2}
+state_mapping = {
+    "Maharashtra": 0,
+    "Karnataka": 1,
+    "Delhi NCR": 2,
+    "Gujarat": 3,
+    "Tamil Nadu": 4,
+    "Telangana": 5,
+    "West Bengal": 6,
+    "Uttar Pradesh": 7,
+    "Kerala": 8,
+    "Rajasthan": 9
+}
 
-st.title("🏢 Startup Profit Predictor")
-st.markdown("Predict startup profits based on spending and location using Multiple Linear Regression.")
+st.title("🇮🇳 Indian Startup Profit Predictor")
+st.markdown("Predict your startup's profit based on spending and Indian state location using Multiple Linear Regression.")
 
 # Input fields
 rd_spend = st.number_input("R&D Spend", min_value=0.0, step=1000.0)
@@ -35,6 +46,7 @@ fig, ax = plt.subplots()
 ax.bar(features, values, color=["#4CAF50", "#FF9800", "#2196F3"])
 ax.set_ylabel("Amount (₹)")
 st.pyplot(fig)
+
 
 
 
