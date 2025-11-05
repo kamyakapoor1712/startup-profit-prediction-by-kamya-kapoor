@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Load trained model
-model = joblib.load("mlr_predictor (1).joblib")
+model = joblib.load("mlr_predictor.joblib")
 
 # State label encoding
 state_mapping = {"California": 0, "Florida": 1, "New York": 2}
@@ -61,5 +61,6 @@ st.pyplot(fig)
 # ---------- FOOTER ----------
 st.markdown("---")
 st.caption("Made with ❤️ using Streamlit and Machine Learning")
+
 
 
