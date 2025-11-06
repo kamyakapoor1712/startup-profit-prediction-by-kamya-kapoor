@@ -2,6 +2,7 @@ import streamlit as st
 import joblib
 import numpy as np
 import matplotlib.pyplot as plt
+from openai import OpenAI
 
 # ---------------- Load trained model ----------------
 model = joblib.load("mlr_predictor.joblib")
@@ -24,7 +25,7 @@ state_mapping = {
 st.set_page_config(page_title="Startup Profit Predictor", layout="centered")
 st.title("🚀 Indian Startup Profit Predictor")
 st.markdown(
-    "Predict your startup's profit based on **spending and location** — now with _What-If Analysis_, _Scenario Comparison_, and a _Smart Advice Engine_."
+    "Predict your startup's profit based on **spending and location** — now with _What-If Analysis_, _Scenario Comparison_, a _Smart Advice Engine_, and an _AI Business Assistant_."
 )
 
 # ---------------- Input Section ----------------
@@ -50,7 +51,7 @@ base_input = np.array([[rd_spend, admin_spend, marketing_spend, state_encoded]])
 base_profit = model.predict(base_input)[0]
 st.success(f"💰 Predicted Profit: ₹{base_profit:,.2f}")
 
-# ---------------- Old Graph Section ----------------
+# ---------------- Graph ----------------
 st.subheader("📈 How Inputs Affect Predicted Profit")
 features = ["R&D Spend", "Administration", "Marketing Spend", "Predicted Profit"]
 values = [rd_spend, admin_spend, marketing_spend, base_profit]
@@ -156,9 +157,34 @@ if advice:
 else:
     st.markdown("✅ Your spending looks balanced — maintain efficiency for steady growth.")
 
+# ---------------- AI BUSINESS ASSISTANT ----------------
+st.subheader("💬 Talk to Your AI Business Assistant")
+
+st.markdown("Ask questions like:")
+st.markdown("> ‘How can I reduce marketing cost?’  \n> ‘What should I prioritize to increase profit?’  \n> ‘Give me growth ideas for a Tech startup in Karnataka.’")
+
+user_input = st.text_area("Ask your Business AI Assistant:")
+
+if user_input:
+    with st.spinner("Thinking..."):
+        try:
+            client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+            prompt = f"You are a startup business consultant. Based on the following data, give personalized advice.\n\nCategory: {category}\nState: {state}\nR&D Spend: ₹{rd_spend}\nAdmin Spend: ₹{admin_spend}\nMarketing Spend: ₹{marketing_spend}\nPredicted Profit: ₹{base_profit:,.2f}\n\nUser question: {user_input}"
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=250
+            )
+            ai_reply = response.choices[0].message.content
+            st.success(ai_reply)
+        except Exception as e:
+            st.error("⚠️ AI Assistant unavailable. Please check your API key or internet connection.")
+
 # ---------------- Footer ----------------
 st.markdown("---")
-st.caption("💡 Made with ❤️ by Kamya Kapoor")
+st.caption("💡 Made with ❤️ by Kamya Kapoor | Enhanced with Smart AI Business Assistant 🚀")
+
+
 
 
 
