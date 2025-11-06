@@ -2,7 +2,10 @@ import streamlit as st
 import joblib
 import numpy as np
 import matplotlib.pyplot as plt
-import openai  # 👈 for AI assistant
+from openai import OpenAI # 👈 for AI assistant
+
+# Initialize OpenAI client
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # ---------------- Load trained model ----------------
 model = joblib.load("mlr_predictor.joblib")
@@ -138,6 +141,7 @@ if user_input:
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+
 
 
 
