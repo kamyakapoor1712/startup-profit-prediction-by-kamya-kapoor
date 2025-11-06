@@ -3,10 +3,10 @@ import joblib
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Load the trained model
+# ---------------- Load trained model ----------------
 model = joblib.load("mlr_predictor.joblib")
 
-# State encoding
+# ---------------- State encoding ----------------
 state_mapping = {
     "Maharashtra": 0,
     "Karnataka": 1,
@@ -20,29 +20,54 @@ state_mapping = {
     "Rajasthan": 9
 }
 
-# --- Page Title ---
+# ---------------- Page setup ----------------
+st.set_page_config(page_title="Startup Profit Predictor", layout="centered")
 st.title("🚀 Indian Startup Profit Predictor")
-st.markdown("Predict your startup’s profit and test *What-If* business scenarios using sliders.")
+st.markdown(
+    "Predict your startup's profit based on spending and Indian state location — now with **What-If analysis** and **scenario comparison**."
+)
 
-# --- Base Input Fields ---
-st.subheader("📊 Base Business Inputs")
+# ---------------- Input Section ----------------
+st.subheader("📊 Enter Business Details")
+
 col1, col2 = st.columns(2)
 with col1:
-    rd_spend = st.number_input("R&D Spend (₹)", min_value=0.0, step=1000.0, value=100000.0)
-    admin_spend = st.number_input("Administration Spend (₹)", min_value=0.0, step=1000.0, value=120000.0)
+    rd_spend = st.number_input("R&D Spend (₹)", min_value=0.0, value=100000.0, step=1000.0)
+    admin_spend = st.number_input("Administration Spend (₹)", min_value=0.0, value=120000.0, step=1000.0)
 with col2:
-    marketing_spend = st.number_input("Marketing Spend (₹)", min_value=0.0, step=1000.0, value=150000.0)
-    state = st.selectbox("State", list(state_mapping.keys()))
+    marketing_spend = st.number_input("Marketing Spend (₹)", min_value=0.0, value=150000.0, step=1000.0)
+    state = st.selectbox("Select State", list(state_mapping.keys()))
 
+chart_type = st.selectbox("Select Graph Type", ["Bar", "Line", "Scatter"])
+
+# ---------------- Base Prediction ----------------
 state_encoded = state_mapping[state]
 base_input = np.array([[rd_spend, admin_spend, marketing_spend, state_encoded]])
 base_profit = model.predict(base_input)[0]
+st.success(f"💰 Predicted Profit: ₹{base_profit:,.2f}")
 
-st.success(f"💰 **Base Predicted Profit:** ₹{base_profit:,.2f}")
+# ---------------- Old Graph Section ----------------
+st.subheader("📈 How Inputs Affect Predicted Profit")
+features = ["R&D Spend", "Administration", "Marketing Spend", "Predicted Profit"]
+values = [rd_spend, admin_spend, marketing_spend, base_profit]
 
-# --- What-If Analysis Section ---
-st.subheader("🤔 What-If Analysis — Adjust Key Factors")
+fig1, ax1 = plt.subplots(figsize=(7, 4))
+ax1.set_title("Input Impact on Predicted Profit")
+ax1.set_ylabel("Value (₹)")
 
+if chart_type == "Bar":
+    colors = ["#FFB74D", "#4FC3F7", "#81C784", "#E57373"]
+    ax1.bar(features, values, color=colors)
+elif chart_type == "Line":
+    ax1.plot(features, values, marker='o', color="#673AB7")
+elif chart_type == "Scatter":
+    ax1.scatter(features, values, color="#388E3C", s=100)
+
+ax1.text(3, base_profit, f"₹{base_profit:,.2f}", ha='center', va='bottom', fontsize=10, color='red')
+st.pyplot(fig1)
+
+# ---------------- What-If Sliders ----------------
+st.subheader("🤔 What-If Analysis (Adjust Key Factors)")
 colA, colB, colC = st.columns(3)
 with colA:
     rd_change = st.slider("R&D Change (%)", -50, 50, 0)
@@ -51,18 +76,17 @@ with colB:
 with colC:
     marketing_change = st.slider("Marketing Change (%)", -50, 50, 0)
 
-# Compute adjusted values
+# Calculate new adjusted values
 rd_new = rd_spend * (1 + rd_change / 100)
 admin_new = admin_spend * (1 + admin_change / 100)
 marketing_new = marketing_spend * (1 + marketing_change / 100)
 
 adjusted_input = np.array([[rd_new, admin_new, marketing_new, state_encoded]])
 adjusted_profit = model.predict(adjusted_input)[0]
+st.info(f"📈 Adjusted Profit: ₹{adjusted_profit:,.2f}")
 
-st.info(f"📈 **Adjusted Profit:** ₹{adjusted_profit:,.2f}")
-
-# --- Scenario Comparison (Pessimistic / Realistic / Optimistic) ---
-st.subheader("📉 Compare Scenarios")
+# ---------------- Scenario Comparison ----------------
+st.subheader("📊 Compare Business Scenarios")
 
 scenarios = {
     "Pessimistic": [rd_spend * 0.9, admin_spend * 0.9, marketing_spend * 0.9],
@@ -71,23 +95,23 @@ scenarios = {
 }
 
 profits = {}
-for scenario, vals in scenarios.items():
+for s, vals in scenarios.items():
     x = np.array([[vals[0], vals[1], vals[2], state_encoded]])
-    profits[scenario] = model.predict(x)[0]
+    profits[s] = model.predict(x)[0]
 
-# --- Chart Visualization ---
-fig, ax = plt.subplots(figsize=(6,4))
-ax.bar(profits.keys(), profits.values(), color=["#FF6F61", "#FFB74D", "#81C784"])
-ax.set_title("Profit Comparison Across Scenarios")
-ax.set_ylabel("Predicted Profit (₹)")
+fig2, ax2 = plt.subplots(figsize=(6, 4))
+ax2.bar(profits.keys(), profits.values(), color=["#E57373", "#FFB74D", "#81C784"])
+ax2.set_title("Profit Comparison Across Scenarios")
+ax2.set_ylabel("Predicted Profit (₹)")
 for i, val in enumerate(profits.values()):
-    ax.text(i, val, f"₹{val:,.0f}", ha='center', va='bottom')
+    ax2.text(i, val, f"₹{val:,.0f}", ha='center', va='bottom')
+st.pyplot(fig2)
 
-st.pyplot(fig)
-
-# --- Footer ---
+# ---------------- Footer ----------------
 st.markdown("---")
-st.caption("💡 Created by Kamya Kapoor | Enhanced with What-If Analysis and Scenario Comparison")
+st.caption("💡 Made with ❤️ by Kamya Kapoor )
+
+
 
 
 
