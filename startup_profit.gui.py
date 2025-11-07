@@ -105,6 +105,8 @@ ax2.set_ylabel("Predicted Profit (₹)")
 for i, val in enumerate(profits.values()):
     ax2.text(i, val, f"₹{val:,.0f}", ha='center', va='bottom')
 st.pyplot(fig2)
+st.subheader("🧠 Smart Advice Engine")
+advice = []  # ✅ Initialize list here
 # Business category input
 category = st.selectbox("Select your startup category:", ["Food", "Tech", "Healthcare", "Education"])
 # Category-based advice
@@ -151,6 +153,7 @@ else:
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+
 
 
 
