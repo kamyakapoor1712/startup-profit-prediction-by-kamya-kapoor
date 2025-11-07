@@ -105,10 +105,51 @@ ax2.set_ylabel("Predicted Profit (₹)")
 for i, val in enumerate(profits.values()):
     ax2.text(i, val, f"₹{val:,.0f}", ha='center', va='bottom')
 st.pyplot(fig2)
+# Category-based advice
+if category == "Food":
+    advice.append("🍴 Food businesses in Maharashtra often face higher rent — allocate 5–10% extra for premises.")
+    advice.append("Focus on local supply chains and online delivery platforms.")
+elif category == "Tech":
+    advice.append("💻 Tech startups thrive on R&D — keep investing in product innovation.")
+    advice.append("Consider government grants for IT-based innovations.")
+elif category == "Education":
+    advice.append("📚 Education startups grow through digital outreach — invest in online presence.")
+    advice.append("In Karnataka or Delhi NCR, bilingual content helps expand reach.")
+elif category == "Healthcare":
+    advice.append("🩺 Healthcare startups face higher compliance costs — set aside funds for certifications.")
+elif category == "Retail":
+    advice.append("🛍️ Marketing is key — allocate at least 30% of spend to brand promotion.")
+elif category == "Finance":
+    advice.append("💰 Keep higher admin reserves for licensing and audits, especially in Delhi NCR.")
+
+# State-based advice
+if state in ["Maharashtra", "Delhi NCR"]:
+    advice.append("🏙️ High operational costs — focus on rent and administrative efficiency.")
+elif state in ["Karnataka", "Telangana"]:
+    advice.append("🚀 Great for tech startups — leverage government startup incentives.")
+elif state in ["Kerala", "Tamil Nadu"]:
+    advice.append("🌴 Local customer trust is vital — use community-centric marketing.")
+
+# Expense pattern advice
+if marketing_spend > rd_spend and marketing_spend > admin_spend:
+    advice.append("📢 Heavy marketing spend — track performance to ensure high ROI.")
+elif rd_spend > marketing_spend:
+    advice.append("🧪 Strong R&D focus — balance with visibility for faster product adoption.")
+elif admin_spend > rd_spend:
+    advice.append("🏢 High administrative costs — optimize management overheads.")
+
+# Display advice
+if advice:
+    for tip in advice:
+        st.markdown(f"- {tip}")
+else:
+    st.markdown("✅ Your spending looks balanced — maintain efficiency for steady growth.")
+
 
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+
 
 
 
