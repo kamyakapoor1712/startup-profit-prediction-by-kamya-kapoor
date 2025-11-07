@@ -110,37 +110,10 @@ for i, val in enumerate(profits.values()):
     ax2.text(i, val, f"₹{val:,.0f}", ha='center', va='bottom')
 st.pyplot(fig2)
 
-# ---------------- AI Business Assistant Section ----------------
-st.markdown("---")
-st.header("💬 Talk to Your AI Business Assistant (ProfitBuddy)")
-
-st.markdown(
-    "Ask me anything — I can suggest strategies, funding ideas, expense optimization, and market-specific advice!"
-)
-
-# --- API Key ---
-openai.api_key = st.secrets.get("OPENAI_API_KEY", "your-api-key-here")
-
-user_input = st.text_input("Ask your business-related question:")
-
-if user_input:
-    try:
-        with st.spinner("ProfitBuddy is thinking... 💭"):
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "You are a friendly startup business assistant for Indian founders."},
-                    {"role": "user", "content": user_input}
-                ]
-            )
-            answer = response["choices"][0]["message"]["content"]
-            st.success(answer)
-    except Exception as e:
-        st.error(f"⚠️ Unable to connect to AI assistant: {e}")
-
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+
 
 
 
