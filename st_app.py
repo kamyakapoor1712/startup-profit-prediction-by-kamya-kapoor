@@ -2,10 +2,6 @@ import streamlit as st
 import joblib
 import numpy as np
 import matplotlib.pyplot as plt
-from openai import OpenAI
-
-# Initialize OpenAI client
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # ---------------- Load trained model ----------------
 model = joblib.load("mlr_predictor.joblib")
@@ -160,32 +156,10 @@ if advice:
 else:
     st.markdown("✅ Your spending looks balanced — maintain efficiency for steady growth.")
 
-# ---------------- AI BUSINESS ASSISTANT ----------------
-st.subheader("💬 Talk to Your AI Business Assistant")
-
-st.markdown("Ask questions like:")
-st.markdown("> ‘How can I reduce marketing cost?’  \n> ‘What should I prioritize to increase profit?’  \n> ‘Give me growth ideas for a Tech startup in Karnataka.’")
-
-user_input = st.text_area("Ask your Business AI Assistant:")
-
-if user_input:
-    with st.spinner("Thinking..."):
-        try:
-            client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-            prompt = f"You are a startup business consultant. Based on the following data, give personalized advice.\n\nCategory: {category}\nState: {state}\nR&D Spend: ₹{rd_spend}\nAdmin Spend: ₹{admin_spend}\nMarketing Spend: ₹{marketing_spend}\nPredicted Profit: ₹{base_profit:,.2f}\n\nUser question: {user_input}"
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=250
-            )
-            ai_reply = response.choices[0].message.content
-            st.success(ai_reply)
-        except Exception as e:
-            st.error("⚠️ AI Assistant unavailable. Please check your API key or internet connection.")
-
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Enhanced with Smart AI Business Assistant 🚀")
+
 
 
 
