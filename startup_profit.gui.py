@@ -111,7 +111,7 @@ advice = []  # ✅ Initialize list here
 category = st.selectbox("Select your startup category:", ["Food", "Tech", "Healthcare", "Education"])
 # Category-based advice
 if category == "Food":
-    advice.append("🍴 Food businesses in Maharashtra often face higher rent — allocate 5–10% extra for premises.")
+    advice.append("🍴 Food businesses in [State] often face higher rent — allocate 5–10% extra for premises.")
     advice.append("Focus on local supply chains and online delivery platforms.")
 elif category == "Tech":
     advice.append("💻 Tech startups thrive on R&D — keep investing in product innovation.")
@@ -153,6 +153,7 @@ else:
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+
 
 
 
