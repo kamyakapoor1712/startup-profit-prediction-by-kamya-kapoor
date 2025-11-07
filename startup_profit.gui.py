@@ -148,11 +148,72 @@ if advice:
         st.markdown(f"- {tip}")
 else:
     st.markdown("✅ Your spending looks balanced — maintain efficiency for steady growth.")
+    # ---------------- Financial Health Metrics ----------------
+st.subheader("💼 Financial Health Metrics")
+
+st.markdown("Understand your startup’s sustainability and profitability metrics:")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    monthly_expense = st.number_input("💰 Total Monthly Expenses (₹)", min_value=0.0, value=200000.0, step=10000.0)
+    monthly_revenue = st.number_input("📈 Monthly Revenue (₹)", min_value=0.0, value=250000.0, step=10000.0)
+with col2:
+    current_funding = st.number_input("🏦 Total Available Funds (₹)", min_value=0.0, value=1000000.0, step=10000.0)
+    customers = st.number_input("👥 Active Customers", min_value=1, value=100)
+with col3:
+    acquisition_cost = st.number_input("🎯 Cost to Acquire One Customer (CAC, ₹)", min_value=0.0, value=5000.0, step=100.0)
+    customer_lifetime = st.number_input("⏱️ Average Customer Lifetime (months)", min_value=1, value=12)
+
+# ---- Calculations ----
+burn_rate = monthly_expense  # spending per month
+runway = current_funding / burn_rate if burn_rate > 0 else 0
+mrr = monthly_revenue
+ltv = (monthly_revenue / customers) * customer_lifetime if customers > 0 else 0
+break_even_point = burn_rate / (monthly_revenue / customers) if monthly_revenue > 0 else 0
+
+# ---- Display Results ----
+st.markdown("### 📊 Key Metrics")
+st.metric("🔥 Burn Rate", f"₹{burn_rate:,.0f} / month")
+st.metric("⏳ Runway", f"{runway:.1f} months", delta=None)
+st.metric("💸 Monthly Recurring Revenue (MRR)", f"₹{mrr:,.0f}")
+st.metric("🎯 Customer Acquisition Cost (CAC)", f"₹{acquisition_cost:,.0f}")
+st.metric("💎 Customer Lifetime Value (LTV)", f"₹{ltv:,.0f}")
+st.metric("⚖️ Break-even Point", f"{break_even_point:.1f} customers")
+
+# ---- Insights ----
+st.markdown("### 🧩 Financial Insights")
+
+insights = []
+
+if runway < 6:
+    insights.append("⚠️ Your runway is short — consider reducing expenses or raising more funds.")
+elif runway < 12:
+    insights.append("🟡 You have a moderate runway. Plan fundraising within the next 6 months.")
+else:
+    insights.append("✅ Strong runway — you’re financially stable for now.")
+
+if ltv < acquisition_cost:
+    insights.append("🚨 Your LTV is lower than CAC — you’re losing money on each customer!")
+elif ltv < acquisition_cost * 3:
+    insights.append("🟠 LTV:CAC ratio is average — aim for 3x or higher for sustainable growth.")
+else:
+    insights.append("💚 Excellent LTV:CAC ratio — your growth is efficient and profitable.")
+
+if break_even_point > customers:
+    insights.append("📉 You haven’t reached break-even yet — need more customers or higher MRR.")
+else:
+    insights.append("💪 You’re operating at or beyond break-even — great work!")
+
+for msg in insights:
+    st.markdown(f"- {msg}")
+
 
 
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+
 
 
 
