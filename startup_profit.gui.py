@@ -309,41 +309,47 @@ for category, amount in expense_categories.items():
 st.markdown("#### 💬 Spending Analysis")
 for msg in alert_messages:
     st.markdown(f"- {msg}")
-    # ---------------- Smart Alerts ----------------
+  # ---------------- Smart Spending Alerts ----------------
 st.markdown("### 🚨 Smart Spending Alerts")
 st.write("Get automatic alerts when your spending exceeds safe limits.")
 
-# Define categories and spend with unique keys
+# ✅ Assign unique keys for each input to avoid DuplicateElementId
+marketing_spend = st.number_input("📢 Marketing Spend (₹)", min_value=0.0, value=50000.0, step=5000.0, key="input_marketing")
+salaries_spend = st.number_input("👩‍💼 Salaries & Team (₹)", min_value=0.0, value=100000.0, step=5000.0, key="input_salaries")
+operations_spend = st.number_input("🏭 Operations & Logistics (₹)", min_value=0.0, value=30000.0, step=5000.0, key="input_operations")
+tech_spend = st.number_input("💻 Tech / Cloud Services (₹)", min_value=0.0, value=20000.0, step=5000.0, key="input_tech")
+misc_spend = st.number_input("🧾 Miscellaneous (₹)", min_value=0.0, value=10000.0, step=5000.0, key="input_misc")
+
+# Combine into dict
 expense_categories = {
-    "Marketing": st.number_input("📢 Marketing Spend (₹)", min_value=0.0, value=50000.0, step=5000.0, key="marketing_input"),
-    "Salaries": st.number_input("👩‍💼 Salaries & Team (₹)", min_value=0.0, value=100000.0, step=5000.0, key="salaries_input"),
-    "Operations": st.number_input("🏭 Operations & Logistics (₹)", min_value=0.0, value=30000.0, step=5000.0, key="operations_input"),
-    "Technology": st.number_input("💻 Tech / Cloud Services (₹)", min_value=0.0, value=20000.0, step=5000.0, key="tech_input"),
-    "Miscellaneous": st.number_input("🧾 Miscellaneous (₹)", min_value=0.0, value=10000.0, step=5000.0, key="misc_input")
+    "Marketing": marketing_spend,
+    "Salaries": salaries_spend,
+    "Operations": operations_spend,
+    "Technology": tech_spend,
+    "Miscellaneous": misc_spend
 }
 
 total_expense = sum(expense_categories.values())
 alert_messages = []
 
-# Alert rules
 for category, amount in expense_categories.items():
     percent = (amount / total_expense) * 100 if total_expense > 0 else 0
 
     if percent > 40:
-        alert_messages.append(f"🚨 {category} spending is **{percent:.1f}%** of total — too high! Consider rebalancing.")
+        alert_messages.append(f"🚨 {category} spending is **{percent:.1f}%** of total — too high!")
     elif percent > 25:
-        alert_messages.append(f"⚠️ {category} is taking {percent:.1f}% of your total spend — review if necessary.")
+        alert_messages.append(f"⚠️ {category} takes **{percent:.1f}%** — review spending.")
     else:
-        alert_messages.append(f"✅ {category} spend ({percent:.1f}%) is within a healthy range.")
+        alert_messages.append(f"✅ {category} spend ({percent:.1f}%) is healthy.")
 
-st.markdown("#### 💬 Spending Analysis")
+st.markdown("#### 💬 Spending Insights")
 for msg in alert_messages:
     st.markdown(f"- {msg}")
-
 
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+
 
 
 
