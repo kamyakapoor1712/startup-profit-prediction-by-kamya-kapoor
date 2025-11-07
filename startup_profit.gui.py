@@ -207,12 +207,84 @@ else:
 
 for msg in insights:
     st.markdown(f"- {msg}")
+    # ---------------- Smart Alerts ----------------
+st.markdown("### 🚨 Smart Spending Alerts")
+
+st.write("Get automatic alerts when your spending exceeds safe limits.")
+
+# Define categories and spend
+expense_categories = {
+    "Marketing": st.number_input("📢 Marketing Spend (₹)", min_value=0.0, value=50000.0, step=5000.0),
+    "Salaries": st.number_input("👩‍💼 Salaries & Team (₹)", min_value=0.0, value=100000.0, step=5000.0),
+    "Operations": st.number_input("🏭 Operations & Logistics (₹)", min_value=0.0, value=30000.0, step=5000.0),
+    "Technology": st.number_input("💻 Tech / Cloud Services (₹)", min_value=0.0, value=20000.0, step=5000.0),
+    "Miscellaneous": st.number_input("🧾 Miscellaneous (₹)", min_value=0.0, value=10000.0, step=5000.0)
+}
+
+total_expense = sum(expense_categories.values())
+alert_messages = []
+
+# Alert rules
+for category, amount in expense_categories.items():
+    percent = (amount / total_expense) * 100 if total_expense > 0 else 0
+
+    if percent > 40:
+        alert_messages.append(f"🚨 {category} spending is **{percent:.1f}%** of total — too high! Consider rebalancing.")
+    elif percent > 25:
+        alert_messages.append(f"⚠️ {category} is taking {percent:.1f}% of your total spend — review if necessary.")
+    else:
+        alert_messages.append(f"✅ {category} spend ({percent:.1f}%) is within a healthy range.")
+
+st.markdown("#### 💬 Spending Analysis")
+for msg in alert_messages:
+    st.markdown(f"- {msg}")
+
+# --------------- Financial Forecast ----------------
+st.markdown("---")
+st.subheader("📈 Financial Forecast (Next 3–12 Months)")
+
+st.write("Estimate your startup’s financial growth over time based on your current performance.")
+
+forecast_months = st.slider("Select forecast duration (months)", 3, 12, 6)
+growth_rate = st.slider("Expected monthly revenue growth (%)", 0.0, 50.0, 10.0)
+expense_growth = st.slider("Expected monthly expense growth (%)", 0.0, 30.0, 5.0)
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+months = np.arange(1, forecast_months + 1)
+forecast_data = pd.DataFrame({
+    "Month": months,
+    "Revenue": monthly_revenue * ((1 + growth_rate/100) ** months),
+    "Expenses": monthly_expense * ((1 + expense_growth/100) ** months)
+})
+forecast_data["Profit"] = forecast_data["Revenue"] - forecast_data["Expenses"]
+
+# Plot
+st.markdown("### 📊 Revenue vs Expense Forecast")
+fig, ax = plt.subplots()
+ax.plot(forecast_data["Month"], forecast_data["Revenue"], label="Revenue", linewidth=2)
+ax.plot(forecast_data["Month"], forecast_data["Expenses"], label="Expenses", linewidth=2)
+ax.plot(forecast_data["Month"], forecast_data["Profit"], label="Profit", linewidth=2)
+ax.set_xlabel("Month")
+ax.set_ylabel("Amount (₹)")
+ax.legend()
+st.pyplot(fig)
+
+# Quick Summary
+final_profit = forecast_data["Profit"].iloc[-1]
+if final_profit < 0:
+    st.error(f"🚨 In {forecast_months} months, you’ll be operating at a **loss of ₹{abs(final_profit):,.0f}**.")
+else:
+    st.success(f"✅ Projected **profit after {forecast_months} months**: ₹{final_profit:,.0f}.")
 
 
 
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+
 
 
 
