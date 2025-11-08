@@ -347,39 +347,12 @@ for msg in alert_messages:
     st.markdown(f"- {msg}")
     # 💸 Smart Spending Alerts
 # =======================================
-st.markdown("## 🚨 Smart Spending Alerts")
-st.markdown("Get automatic alerts when your spending exceeds safe limits.")
 
-# Unique keys for inputs
-rd_alert = st.number_input("🧠 R&D Spend (₹)", min_value=0.0, value=rd_spend, key="alert_rd_spend")
-admin_alert = st.number_input("🏢 Administration Spend (₹)", min_value=0.0, value=admin_spend, key="alert_admin_spend")
-marketing_alert = st.number_input("📣 Marketing Spend (₹)", min_value=0.0, value=marketing_spend, key="alert_marketing_spend")
-
-# Thresholds (you can tune these)
-rd_limit = 500000
-admin_limit = 300000
-marketing_limit = 400000
-
-# Check for spending alerts
-alerts = []
-
-if rd_alert > rd_limit:
-    alerts.append("🧠 R&D spending is higher than recommended — consider reviewing your research investments.")
-if admin_alert > admin_limit:
-    alerts.append("🏢 Administration costs are high — optimize staffing or operations.")
-if marketing_alert > marketing_limit:
-    alerts.append("📣 Marketing spend is high — track ROI and reduce low-performing channels.")
-
-if alerts:
-    st.warning("### ⚠️ Spending Alerts")
-    for alert in alerts:
-        st.write(alert)
-else:
-    st.success("✅ All spending categories are within safe limits.")
 
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+
 
 
 
