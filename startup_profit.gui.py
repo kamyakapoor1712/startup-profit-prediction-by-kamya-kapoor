@@ -294,24 +294,10 @@ expense_categories = {
 
 total_expense = sum(expense_categories.values())
 alert_messages = []
-
-# Alert rules
-for category, amount in expense_categories.items():
-    percent = (amount / total_expense) * 100 if total_expense > 0 else 0
-
-    if percent > 40:
-        alert_messages.append(f"🚨 {category} spending is **{percent:.1f}%** of total — too high! Consider rebalancing.")
-    elif percent > 25:
-        alert_messages.append(f"⚠️ {category} is taking {percent:.1f}% of your total spend — review if necessary.")
-    else:
-        alert_messages.append(f"✅ {category} spend ({percent:.1f}%) is within a healthy range.")
-
-st.markdown("#### 💬 Spending Analysis")
-for msg in alert_messages:
-    st.markdown(f"- {msg}")
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+
 
 
 
