@@ -3,6 +3,13 @@ import joblib
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import google.generativeai as genai
+
+# ---------------- Configure Gemini API ----------------
+# Make sure your .streamlit/secrets.toml has:
+# GEMINI_API_KEY = "YOUR_API_KEY_HERE"
+
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 # ---------------- Load trained ML model ----------------
 model = joblib.load("mlr_predictor.joblib")
@@ -171,9 +178,39 @@ st.metric("🎯 CAC", f"₹{acquisition_cost:,.0f}")
 st.metric("💎 LTV", f"₹{ltv:,.0f}")
 st.metric("⚖️ Break-even Point", f"{break_even_point:.1f} customers")
 
+# ---------------- Gemini AI Startup Advisor ----------------
+st.subheader("💬 Gemini AI Startup Advisor")
+
+user_query = st.text_area(
+    "Ask anything about your startup strategy, finances, or business model:",
+    placeholder="e.g., How can I improve profit margins for my tech startup in Karnataka?"
+)
+
+if st.button("Get AI Advice"):
+    if user_query.strip():
+        with st.spinner("🤖 Thinking with Gemini..."):
+            gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+            prompt = f"""
+            You are a business strategy expert helping Indian startups.
+            User question: {user_query}.
+            Context:
+            - State: {state}
+            - Category: {category}
+            - Predicted Profit: ₹{base_profit:,.2f}
+            - Adjusted Profit: ₹{adjusted_profit:,.2f}
+            Give practical, concise, and insightful advice in 4-5 bullet points.
+            """
+            response = gemini_model.generate_content(prompt)
+            st.markdown("### 🧠 Gemini AI’s Advice")
+            st.markdown(response.text)
+    else:
+        st.warning("Please enter a question first.")
+
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + Gemini AI Business Assistant")
+
+
 
 
 
