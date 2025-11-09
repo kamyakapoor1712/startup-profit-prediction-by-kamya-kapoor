@@ -3,18 +3,15 @@ import joblib
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import google.generativeai as genai   # 👈 Import Gemini SDK
-import os
+import google.generativeai as genai
 
 # ---------------- Configure Gemini API ----------------
-# Option 1 (Quick local testing — replace with your actual key)
-# genai.configure(api_key="AIzaSyDfjqy-lTXtn8aTsSatLKSURD03wE__BfE")
+# Make sure your .streamlit/secrets.toml has:
+# GEMINI_API_KEY = "YOUR_API_KEY_HERE"
 
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-# Option 2 (Recommended — if you stored your key in .streamlit/secrets.toml)
-genai.configure(api_key=st.secrets["AIzaSyDfjqy-lTXtn8aTsSatLKSURD03wE__BfE"])
-
-# ---------------- Load trained model ----------------
+# ---------------- Load trained ML model ----------------
 model = joblib.load("mlr_predictor.joblib")
 
 # ---------------- State encoding ----------------
@@ -122,36 +119,35 @@ advice = []
 category = st.selectbox("Select your startup category:", ["Food", "Tech", "Healthcare", "Education"])
 
 if category == "Food":
-    advice.append("🍴 Food businesses often face higher rent — allocate 5–10% extra for premises.")
-    advice.append("Focus on local supply chains and online delivery platforms.")
+    advice.append("🍴 Focus on supply chain optimization and delivery partnerships.")
+    advice.append("Track seasonal demand patterns for better inventory planning.")
 elif category == "Tech":
-    advice.append("💻 Tech startups thrive on R&D — keep investing in product innovation.")
-    advice.append("Consider government grants for IT-based innovations.")
+    advice.append("💻 Keep innovating — invest consistently in R&D.")
+    advice.append("Apply for government startup grants in tech hubs like Karnataka or Telangana.")
 elif category == "Education":
-    advice.append("📚 Education startups grow through digital outreach — invest in online presence.")
-    advice.append("In Karnataka or Delhi NCR, bilingual content helps expand reach.")
+    advice.append("📚 Build an online learning platform with multilingual options.")
+    advice.append("Focus on SEO and digital marketing for better reach.")
 elif category == "Healthcare":
-    advice.append("🩺 Healthcare startups face higher compliance costs — set aside funds for certifications.")
+    advice.append("🩺 Ensure compliance with medical data and safety regulations.")
+    advice.append("Invest in certifications to gain customer trust.")
 
 if state in ["Maharashtra", "Delhi NCR"]:
-    advice.append("🏙️ High operational costs — focus on rent and administrative efficiency.")
+    advice.append("🏙️ Expect higher operational costs — manage rent and admin expenses tightly.")
 elif state in ["Karnataka", "Telangana"]:
-    advice.append("🚀 Great for tech startups — leverage government startup incentives.")
+    advice.append("🚀 Leverage government startup incentives and tech ecosystem.")
 elif state in ["Kerala", "Tamil Nadu"]:
-    advice.append("🌴 Local customer trust is vital — use community-centric marketing.")
+    advice.append("🌴 Build strong local brand loyalty through community engagement.")
 
 if marketing_spend > rd_spend and marketing_spend > admin_spend:
-    advice.append("📢 Heavy marketing spend — track performance to ensure high ROI.")
+    advice.append("📢 Heavy marketing — ensure campaigns are ROI-positive.")
 elif rd_spend > marketing_spend:
-    advice.append("🧪 Strong R&D focus — balance with visibility for faster product adoption.")
+    advice.append("🧪 Strong R&D — balance innovation with brand visibility.")
 elif admin_spend > rd_spend:
-    advice.append("🏢 High administrative costs — optimize management overheads.")
+    advice.append("🏢 High admin costs — optimize management structure.")
 
-if advice:
-    for tip in advice:
-        st.markdown(f"- {tip}")
-else:
-    st.markdown("✅ Your spending looks balanced — maintain efficiency for steady growth.")
+st.markdown("#### 💡 Personalized Advice:")
+for tip in advice:
+    st.markdown(f"- {tip}")
 
 # ---------------- Financial Health Metrics ----------------
 st.subheader("💼 Financial Health Metrics")
@@ -168,108 +164,21 @@ with col3:
     acquisition_cost = st.number_input("🎯 Cost to Acquire One Customer (₹)", min_value=0.0, value=5000.0, step=100.0)
     customer_lifetime = st.number_input("⏱️ Average Customer Lifetime (months)", min_value=1, value=12)
 
-# Calculations
 burn_rate = monthly_expense
 runway = current_funding / burn_rate if burn_rate > 0 else 0
 mrr = monthly_revenue
 ltv = (monthly_revenue / customers) * customer_lifetime if customers > 0 else 0
 break_even_point = burn_rate / (monthly_revenue / customers) if monthly_revenue > 0 else 0
 
-# Display Metrics
 st.markdown("### 📊 Key Metrics")
 st.metric("🔥 Burn Rate", f"₹{burn_rate:,.0f} / month")
 st.metric("⏳ Runway", f"{runway:.1f} months")
-st.metric("💸 Monthly Recurring Revenue (MRR)", f"₹{mrr:,.0f}")
-st.metric("🎯 Customer Acquisition Cost (CAC)", f"₹{acquisition_cost:,.0f}")
-st.metric("💎 Customer Lifetime Value (LTV)", f"₹{ltv:,.0f}")
+st.metric("💸 MRR", f"₹{mrr:,.0f}")
+st.metric("🎯 CAC", f"₹{acquisition_cost:,.0f}")
+st.metric("💎 LTV", f"₹{ltv:,.0f}")
 st.metric("⚖️ Break-even Point", f"{break_even_point:.1f} customers")
 
-# Insights
-st.markdown("### 🧩 Financial Insights")
-insights = []
-
-if runway < 6:
-    insights.append("⚠️ Your runway is short — consider reducing expenses or raising more funds.")
-elif runway < 12:
-    insights.append("🟡 You have a moderate runway. Plan fundraising within the next 6 months.")
-else:
-    insights.append("✅ Strong runway — you’re financially stable for now.")
-
-if ltv < acquisition_cost:
-    insights.append("🚨 Your LTV is lower than CAC — you’re losing money on each customer!")
-elif ltv < acquisition_cost * 3:
-    insights.append("🟠 LTV:CAC ratio is average — aim for 3x or higher for sustainable growth.")
-else:
-    insights.append("💚 Excellent LTV:CAC ratio — your growth is efficient and profitable.")
-
-if break_even_point > customers:
-    insights.append("📉 You haven’t reached break-even yet — need more customers or higher MRR.")
-else:
-    insights.append("💪 You’re operating at or beyond break-even — great work!")
-
-for msg in insights:
-    st.markdown(f"- {msg}")
-
-# ---------------- Smart Spending Alerts (only once) ----------------
-st.markdown("### 🚨 Smart Spending Alerts")
-st.write("Get automatic alerts when your spending exceeds safe limits.")
-
-expense_categories = {
-    "Marketing": st.number_input("📢 Marketing Spend (₹)", min_value=0.0, value=50000.0, step=5000.0),
-    "Salaries": st.number_input("👩‍💼 Salaries & Team (₹)", min_value=0.0, value=100000.0, step=5000.0),
-    "Operations": st.number_input("🏭 Operations & Logistics (₹)", min_value=0.0, value=30000.0, step=5000.0),
-    "Technology": st.number_input("💻 Tech / Cloud Services (₹)", min_value=0.0, value=20000.0, step=5000.0),
-    "Miscellaneous": st.number_input("🧾 Miscellaneous (₹)", min_value=0.0, value=10000.0, step=5000.0)
-}
-
-total_expense = sum(expense_categories.values())
-alert_messages = []
-
-for category, amount in expense_categories.items():
-    percent = (amount / total_expense) * 100 if total_expense > 0 else 0
-    if percent > 40:
-        alert_messages.append(f"🚨 {category} spending is **{percent:.1f}%** of total — too high! Consider rebalancing.")
-    elif percent > 25:
-        alert_messages.append(f"⚠️ {category} is taking {percent:.1f}% of your total spend — review if necessary.")
-    else:
-        alert_messages.append(f"✅ {category} spend ({percent:.1f}%) is within a healthy range.")
-
-st.markdown("#### 💬 Spending Analysis")
-for msg in alert_messages:
-    st.markdown(f"- {msg}")
-
-# ---------------- Financial Forecast ----------------
-st.markdown("---")
-st.subheader("📈 Financial Forecast (Next 3–12 Months)")
-st.write("Estimate your startup’s financial growth over time based on your current performance.")
-
-forecast_months = st.slider("Select forecast duration (months)", 3, 12, 6)
-growth_rate = st.slider("Expected monthly revenue growth (%)", 0.0, 50.0, 10.0)
-expense_growth = st.slider("Expected monthly expense growth (%)", 0.0, 30.0, 5.0)
-
-months = np.arange(1, forecast_months + 1)
-forecast_data = pd.DataFrame({
-    "Month": months,
-    "Revenue": monthly_revenue * ((1 + growth_rate / 100) ** months),
-    "Expenses": monthly_expense * ((1 + expense_growth / 100) ** months)
-})
-forecast_data["Profit"] = forecast_data["Revenue"] - forecast_data["Expenses"]
-
-fig, ax = plt.subplots()
-ax.plot(forecast_data["Month"], forecast_data["Revenue"], label="Revenue", linewidth=2)
-ax.plot(forecast_data["Month"], forecast_data["Expenses"], label="Expenses", linewidth=2)
-ax.plot(forecast_data["Month"], forecast_data["Profit"], label="Profit", linewidth=2)
-ax.set_xlabel("Month")
-ax.set_ylabel("Amount (₹)")
-ax.legend()
-st.pyplot(fig)
-
-final_profit = forecast_data["Profit"].iloc[-1]
-if final_profit < 0:
-    st.error(f"🚨 In {forecast_months} months, you’ll be operating at a **loss of ₹{abs(final_profit):,.0f}**.")
-else:
-    st.success(f"✅ Projected **profit after {forecast_months} months**: ₹{final_profit:,.0f}.")
-    # ---------------- Gemini AI Advisor ----------------
+# ---------------- Gemini AI Startup Advisor ----------------
 st.subheader("💬 Gemini AI Startup Advisor")
 
 user_query = st.text_area(
@@ -280,7 +189,7 @@ user_query = st.text_area(
 if st.button("Get AI Advice"):
     if user_query.strip():
         with st.spinner("🤖 Thinking with Gemini..."):
-            model = genai.GenerativeModel("gemini-1.5-flash")
+            gemini_model = genai.GenerativeModel("gemini-1.5-flash")
             prompt = f"""
             You are a business strategy expert helping Indian startups.
             User question: {user_query}.
@@ -291,43 +200,17 @@ if st.button("Get AI Advice"):
             - Adjusted Profit: ₹{adjusted_profit:,.2f}
             Give practical, concise, and insightful advice in 4-5 bullet points.
             """
-            response = model.generate_content(prompt)
+            response = gemini_model.generate_content(prompt)
             st.markdown("### 🧠 Gemini AI’s Advice")
             st.markdown(response.text)
     else:
         st.warning("Please enter a question first.")
-        import streamlit as st
-import google.generativeai as genai
-
-# Configure Gemini
-genai.configure(api_key=st.secrets["AIzaSyDfjqy-lTXtn8aTsSatLKSURD03wE__BfE"])
-
-st.title("🤖 Gemini AI Startup Advisor")
-
-user_query = st.text_area("Ask Gemini about your startup:", placeholder="e.g. How can I improve profit margins?")
-
-if st.button("Get AI Advice"):
-    if user_query.strip():
-        with st.spinner("💭 Thinking with Gemini..."):
-            model = genai.GenerativeModel("gemini-1.5-flash")
-            prompt = f"""
-            You are a business strategy expert helping Indian startups.
-            Question: {user_query}
-            Give practical and concise advice in 4–5 bullet points.
-            """
-            response = model.generate_content(prompt)
-            st.subheader("💡 Gemini’s Advice")
-            st.markdown(response.text)
-    else:
-        st.warning("Please enter a question first.")
-
-
-
-
 
 # ---------------- Footer ----------------
 st.markdown("---")
-st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + Gemini AI Business Assistant")
+
+
 
 
 
