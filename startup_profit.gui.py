@@ -3,7 +3,16 @@ import joblib
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import google.generativeai as genai   # 👈 Import Gemini SDK
+import os
 
+# ---------------- Configure Gemini API ----------------
+# Option 1 (Quick local testing — replace with your actual key)
+# genai.configure(api_key="AIzaSyDfjqy-lTXtn8aTsSatLKSURD03wE__BfE")
+
+
+# Option 2 (Recommended — if you stored your key in .streamlit/secrets.toml)
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 # ---------------- Load trained model ----------------
 model = joblib.load("mlr_predictor.joblib")
@@ -260,12 +269,41 @@ if final_profit < 0:
     st.error(f"🚨 In {forecast_months} months, you’ll be operating at a **loss of ₹{abs(final_profit):,.0f}**.")
 else:
     st.success(f"✅ Projected **profit after {forecast_months} months**: ₹{final_profit:,.0f}.")
+    # ---------------- Gemini AI Advisor ----------------
+st.subheader("💬 Gemini AI Startup Advisor")
+
+user_query = st.text_area(
+    "Ask anything about your startup strategy, finances, or business model:",
+    placeholder="e.g., How can I improve profit margins for my tech startup in Karnataka?"
+)
+
+if st.button("Get AI Advice"):
+    if user_query.strip():
+        with st.spinner("🤖 Thinking with Gemini..."):
+            model = genai.GenerativeModel("gemini-1.5-flash")
+            prompt = f"""
+            You are a business strategy expert helping Indian startups.
+            User question: {user_query}.
+            Context:
+            - State: {state}
+            - Category: {category}
+            - Predicted Profit: ₹{base_profit:,.2f}
+            - Adjusted Profit: ₹{adjusted_profit:,.2f}
+            Give practical, concise, and insightful advice in 4-5 bullet points.
+            """
+            response = model.generate_content(prompt)
+            st.markdown("### 🧠 Gemini AI’s Advice")
+            st.markdown(response.text)
+    else:
+        st.warning("Please enter a question first.")
+
 
 
 
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+
 
 
 
