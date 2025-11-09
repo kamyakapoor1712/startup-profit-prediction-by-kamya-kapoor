@@ -2,11 +2,8 @@ import streamlit as st
 import joblib
 import numpy as np
 import matplotlib.pyplot as plt
-from openai import OpenAI
 import pandas as pd
 
-# Initialize OpenAI client
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # ---------------- Load trained model ----------------
 model = joblib.load("mlr_predictor.joblib")
@@ -264,32 +261,12 @@ if final_profit < 0:
 else:
     st.success(f"✅ Projected **profit after {forecast_months} months**: ₹{final_profit:,.0f}.")
 
-# ---------------- AI Startup Advisor ----------------
-st.markdown("---")
-st.subheader("🤖 AI Startup Advisor")
-st.write("Ask any question about your startup, business growth, funding, or strategy — and get tailored insights from your AI Assistant.")
 
-user_question = st.text_input("💬 Ask your question:")
-
-if st.button("Get AI Advice"):
-    if user_question.strip():
-        with st.spinner("Analyzing your question... 🤔"):
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": "You are a professional Indian startup advisor who gives data-driven, practical, and encouraging advice."},
-                    {"role": "user", "content": user_question}
-                ]
-            )
-            answer = response.choices[0].message.content
-            st.success("🧠 Here's your advice:")
-            st.write(answer)
-    else:
-        st.warning("Please enter a question before asking for advice.")
 
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+
 
 
 
