@@ -296,6 +296,31 @@ if st.button("Get AI Advice"):
             st.markdown(response.text)
     else:
         st.warning("Please enter a question first.")
+        import streamlit as st
+import google.generativeai as genai
+
+# Configure Gemini
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+
+st.title("🤖 Gemini AI Startup Advisor")
+
+user_query = st.text_area("Ask Gemini about your startup:", placeholder="e.g. How can I improve profit margins?")
+
+if st.button("Get AI Advice"):
+    if user_query.strip():
+        with st.spinner("💭 Thinking with Gemini..."):
+            model = genai.GenerativeModel("gemini-1.5-flash")
+            prompt = f"""
+            You are a business strategy expert helping Indian startups.
+            Question: {user_query}
+            Give practical and concise advice in 4–5 bullet points.
+            """
+            response = model.generate_content(prompt)
+            st.subheader("💡 Gemini’s Advice")
+            st.markdown(response.text)
+    else:
+        st.warning("Please enter a question first.")
+
 
 
 
@@ -303,6 +328,7 @@ if st.button("Get AI Advice"):
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+
 
 
 
