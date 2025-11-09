@@ -22,8 +22,8 @@ state_mapping = {
 }
 
 # ---------------- Page setup ----------------
-st.set_page_config(page_title="Startup Profit Predictor + AI Assistant", layout="centered")
-st.title("🚀 Indian Startup Profit Predictor + 🤖 Business Assistant")
+st.set_page_config(page_title="Startup Profit Predictor ", layout="centered")
+st.title("🚀 Indian Startup Profit Predictor ")
 st.markdown("Predict your startup’s profit and get smart AI-powered business advice!")
 
 # ---------------- Input Section ----------------
@@ -173,7 +173,8 @@ st.metric("⚖️ Break-even Point", f"{break_even_point:.1f} customers")
 
 # ---------------- Footer ----------------
 st.markdown("---")
-st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + Gemini AI Business Assistant")
+st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML")
+
 
 
 
