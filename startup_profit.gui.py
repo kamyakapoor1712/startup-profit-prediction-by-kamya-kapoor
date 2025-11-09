@@ -12,7 +12,7 @@ import os
 
 
 # Option 2 (Recommended — if you stored your key in .streamlit/secrets.toml)
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+genai.configure(api_key=st.secrets["AIzaSyDfjqy-lTXtn8aTsSatLKSURD03wE__BfE"])
 
 # ---------------- Load trained model ----------------
 model = joblib.load("mlr_predictor.joblib")
@@ -300,7 +300,7 @@ if st.button("Get AI Advice"):
 import google.generativeai as genai
 
 # Configure Gemini
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+genai.configure(api_key=st.secrets["AIzaSyDfjqy-lTXtn8aTsSatLKSURD03wE__BfE"])
 
 st.title("🤖 Gemini AI Startup Advisor")
 
@@ -328,6 +328,7 @@ if st.button("Get AI Advice"):
 # ---------------- Footer ----------------
 st.markdown("---")
 st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + ML + AI Business Assistant")
+
 
 
 
