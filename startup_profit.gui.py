@@ -6,6 +6,29 @@ import matplotlib.pyplot as plt
 # ---------------- Page Setup ----------------
 st.set_page_config(page_title="Startup Profit Predictor", layout="centered")
 
+# ---------------- Simple Styling ----------------
+st.markdown("""
+<style>
+.card {
+    padding: 1.2rem;
+    border-radius: 10px;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 1.5rem;
+}
+.highlight {
+    font-size: 24px;
+    font-weight: 600;
+    color: #065f46;
+}
+.section-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ---------------- Load Model ----------------
 model = joblib.load("mlr_predictor.joblib")
 
@@ -16,13 +39,14 @@ state_mapping = {
     "Uttar Pradesh": 7, "Kerala": 8, "Rajasthan": 9
 }
 
-# ---------------- Title ----------------
+# ================= HEADER =================
 st.title("🚀 Indian Startup Profit Predictor")
-st.caption("AI-based profit forecasting & business decision support")
+st.caption("AI-powered business forecasting & decision-support system")
 st.markdown("---")
 
 # ================= BUSINESS DETAILS =================
-st.subheader("📊 Business Details")
+st.markdown('<div class="card">', unsafe_allow_html=True)
+st.markdown('<div class="section-title">📊 Business Details</div>', unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 
@@ -36,24 +60,26 @@ with col2:
     category = st.selectbox("Startup Category", ["Tech", "Food", "Healthcare", "Education"])
     chart_type = st.selectbox("Chart Type", ["Bar", "Line", "Scatter"])
 
-# ---------------- Prediction ----------------
+st.markdown('</div>', unsafe_allow_html=True)
+
+# ================= PREDICTION =================
 state_encoded = state_mapping[state]
 X = np.array([[rd_spend, admin_spend, marketing_spend, state_encoded]])
 base_profit = model.predict(X)[0]
 
-st.success(f"💰 Predicted Profit: ₹{base_profit:,.2f}")
-
-st.markdown("---")
+st.markdown(
+    f'<div class="card highlight">💰 Predicted Profit: ₹{base_profit:,.2f}</div>',
+    unsafe_allow_html=True
+)
 
 # ================= WHAT-IF & SCENARIOS =================
-st.subheader("🔁 Business Impact Analysis")
+st.markdown('<div class="card">', unsafe_allow_html=True)
+st.markdown('<div class="section-title">🔁 Business Impact Analysis</div>', unsafe_allow_html=True)
 
 left, right = st.columns(2)
 
-# -------- What If --------
 with left:
-    st.markdown("### 🤔 What-If Analysis")
-
+    st.markdown("**🤔 What-If Analysis**")
     rd_change = st.slider("R&D Change (%)", -50, 50, 0)
     admin_change = st.slider("Admin Change (%)", -50, 50, 0)
     marketing_change = st.slider("Marketing Change (%)", -50, 50, 0)
@@ -68,30 +94,31 @@ with left:
     adjusted_profit = model.predict(X_adj)[0]
     st.info(f"📈 Adjusted Profit: ₹{adjusted_profit:,.2f}")
 
-# -------- Scenario Comparison --------
 with right:
-    st.markdown("### 📊 Scenario Comparison")
+    st.markdown("**📊 Scenario Comparison**")
 
     scenarios = {
-        "Pessimistic": [0.9, 0.9, 0.9],
-        "Realistic": [1.0, 1.0, 1.0],
-        "Optimistic": [1.1, 1.1, 1.1]
+        "Pessimistic": 0.9,
+        "Realistic": 1.0,
+        "Optimistic": 1.1
     }
 
     profits = []
-    for s in scenarios.values():
-        x = np.array([[rd_spend*s[0], admin_spend*s[1], marketing_spend*s[2], state_encoded]])
+    for factor in scenarios.values():
+        x = np.array([[rd_spend*factor, admin_spend*factor, marketing_spend*factor, state_encoded]])
         profits.append(model.predict(x)[0])
 
     fig, ax = plt.subplots(figsize=(4, 3))
     ax.bar(scenarios.keys(), profits)
-    ax.set_ylabel("₹ Profit")
+    ax.set_ylabel("Profit (₹)")
+    ax.set_title("Scenario-wise Profit")
     st.pyplot(fig)
 
-st.markdown("---")
+st.markdown('</div>', unsafe_allow_html=True)
 
 # ================= FINANCIAL HEALTH =================
-st.subheader("💼 Financial Health Matrix")
+st.markdown('<div class="card">', unsafe_allow_html=True)
+st.markdown('<div class="section-title">💼 Financial Health Matrix</div>', unsafe_allow_html=True)
 
 c1, c2, c3 = st.columns(3)
 
@@ -108,34 +135,36 @@ burn_rate = monthly_expense
 runway = current_funding / burn_rate if burn_rate else 0
 ltv = (monthly_revenue / customers) * lifetime if customers else 0
 
-st.markdown("---")
+st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= ADVICE ENGINE =================
-st.subheader("🧠 Smart Advice Engine")
+# ================= ADVICE =================
+st.markdown('<div class="card">', unsafe_allow_html=True)
+st.markdown('<div class="section-title">🧠 Smart Advice Engine</div>', unsafe_allow_html=True)
 
 advice = []
 
 if category == "Tech":
-    advice += ["Invest consistently in R&D.", "Leverage incubators and startup grants."]
+    advice += ["Invest consistently in R&D", "Leverage incubators & grants"]
 elif category == "Food":
-    advice += ["Reduce wastage.", "Optimize supply chain & delivery."]
+    advice += ["Reduce wastage", "Optimize delivery logistics"]
 elif category == "Healthcare":
-    advice += ["Ensure compliance.", "Build trust with certifications."]
+    advice += ["Ensure compliance", "Build trust with certifications"]
 elif category == "Education":
-    advice += ["Focus on digital platforms.", "Use SEO and performance marketing."]
+    advice += ["Focus on digital platforms", "Use SEO & performance marketing"]
 
 if marketing_spend > rd_spend:
-    advice.append("Marketing-heavy strategy — monitor ROI.")
+    advice.append("Marketing-heavy strategy — track ROI carefully")
 elif rd_spend > marketing_spend:
-    advice.append("Innovation-led strategy — improve brand visibility.")
+    advice.append("Innovation-led strategy — boost brand visibility")
 
 for tip in advice:
     st.markdown(f"- {tip}")
 
-st.markdown("---")
+st.markdown('</div>', unsafe_allow_html=True)
 
 # ================= KEY METRICS =================
-st.subheader("📌 Key Metrics")
+st.markdown('<div class="card">', unsafe_allow_html=True)
+st.markdown('<div class="section-title">📌 Key Metrics</div>', unsafe_allow_html=True)
 
 m1, m2, m3, m4 = st.columns(4)
 m1.metric("🔥 Burn Rate", f"₹{burn_rate:,.0f}")
@@ -143,9 +172,12 @@ m2.metric("⏳ Runway", f"{runway:.1f} months")
 m3.metric("💎 LTV", f"₹{ltv:,.0f}")
 m4.metric("🎯 CAC", f"₹{cac:,.0f}")
 
-# ---------------- Footer ----------------
-st.markdown("---")
+st.markdown('</div>', unsafe_allow_html=True)
+
+# ================= FOOTER =================
 st.caption("Made with ❤️ by Kamya Kapoor | Streamlit + Machine Learning")
+
+
 
 
 
