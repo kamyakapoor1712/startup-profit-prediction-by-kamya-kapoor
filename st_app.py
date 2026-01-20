@@ -3,162 +3,156 @@ import joblib
 import numpy as np
 import matplotlib.pyplot as plt
 
-# ---------------- Load trained model ----------------
-model = joblib.load("mlr_predictor.joblib")
-
-# ---------------- State encoding ----------------
-state_mapping = {
-    "Maharashtra": 0,
-    "Karnataka": 1,
-    "Delhi NCR": 2,
-    "Gujarat": 3,
-    "Tamil Nadu": 4,
-    "Telangana": 5,
-    "West Bengal": 6,
-    "Uttar Pradesh": 7,
-    "Kerala": 8,
-    "Rajasthan": 9
-}
-
-# ---------------- Page setup ----------------
-st.set_page_config(page_title="Startup Profit Predictor", layout="centered")
-st.title("🚀 Indian Startup Profit Predictor")
-st.markdown(
-    "Predict your startup's profit based on **spending and location** — now with _What-If Analysis_, _Scenario Comparison_, a _Smart Advice Engine_, and an _AI Business Assistant_."
+# ---------------- Page Config ----------------
+st.set_page_config(
+    page_title="Startup Profit Predictor",
+    page_icon="🚀",
+    layout="wide"
 )
 
-# ---------------- Input Section ----------------
-st.subheader("📊 Enter Business Details")
+# ---------------- Load Model ----------------
+model = joblib.load("mlr_predictor.joblib")
 
-col1, col2 = st.columns(2)
-with col1:
-    category = st.selectbox(
-        "Startup Category",
-        ["Food", "Tech", "Education", "Healthcare", "Retail", "Finance", "Other"]
-    )
-    rd_spend = st.number_input("R&D Spend (₹)", min_value=0.0, value=100000.0, step=1000.0)
-    admin_spend = st.number_input("Administration Spend (₹)", min_value=0.0, value=120000.0, step=1000.0)
-with col2:
-    marketing_spend = st.number_input("Marketing Spend (₹)", min_value=0.0, value=150000.0, step=1000.0)
-    state = st.selectbox("Select State", list(state_mapping.keys()))
-
-chart_type = st.selectbox("Select Graph Type", ["Bar", "Line", "Scatter"])
-
-# ---------------- Base Prediction ----------------
-state_encoded = state_mapping[state]
-base_input = np.array([[rd_spend, admin_spend, marketing_spend, state_encoded]])
-base_profit = model.predict(base_input)[0]
-st.success(f"💰 Predicted Profit: ₹{base_profit:,.2f}")
-
-# ---------------- Graph ----------------
-st.subheader("📈 How Inputs Affect Predicted Profit")
-features = ["R&D Spend", "Administration", "Marketing Spend", "Predicted Profit"]
-values = [rd_spend, admin_spend, marketing_spend, base_profit]
-
-fig1, ax1 = plt.subplots(figsize=(7, 4))
-ax1.set_title("Input Impact on Predicted Profit")
-ax1.set_ylabel("Value (₹)")
-
-if chart_type == "Bar":
-    colors = ["#FFB74D", "#FFD54F", "#FFF176", "#FF9800"]
-    ax1.bar(features, values, color=colors)
-elif chart_type == "Line":
-    ax1.plot(features, values, marker='o', color="#FF6F00", linewidth=2)
-elif chart_type == "Scatter":
-    ax1.scatter(features, values, color="#FFA000", s=100)
-
-ax1.text(3, base_profit, f"₹{base_profit:,.2f}", ha='center', va='bottom', fontsize=10, color='red')
-st.pyplot(fig1)
-
-# ---------------- What-If Sliders ----------------
-st.subheader("🤔 What-If Analysis (Adjust Key Factors)")
-colA, colB, colC = st.columns(3)
-with colA:
-    rd_change = st.slider("R&D Change (%)", -50, 50, 0)
-with colB:
-    admin_change = st.slider("Admin Change (%)", -50, 50, 0)
-with colC:
-    marketing_change = st.slider("Marketing Change (%)", -50, 50, 0)
-
-# Calculate adjusted values
-rd_new = rd_spend * (1 + rd_change / 100)
-admin_new = admin_spend * (1 + admin_change / 100)
-marketing_new = marketing_spend * (1 + marketing_change / 100)
-
-adjusted_input = np.array([[rd_new, admin_new, marketing_new, state_encoded]])
-adjusted_profit = model.predict(adjusted_input)[0]
-st.info(f"📈 Adjusted Profit: ₹{adjusted_profit:,.2f}")
-
-# ---------------- Scenario Comparison ----------------
-st.subheader("📊 Compare Business Scenarios")
-
-scenarios = {
-    "Pessimistic": [rd_spend * 0.9, admin_spend * 1.1, marketing_spend * 0.8],
-    "Realistic": [rd_spend, admin_spend, marketing_spend],
-    "Optimistic": [rd_spend * 1.2, admin_spend * 0.9, marketing_spend * 1.3],
+# ---------------- State Encoding ----------------
+state_mapping = {
+    "Maharashtra": 0, "Karnataka": 1, "Delhi NCR": 2, "Gujarat": 3,
+    "Tamil Nadu": 4, "Telangana": 5, "West Bengal": 6,
+    "Uttar Pradesh": 7, "Kerala": 8, "Rajasthan": 9
 }
 
-profits = {}
-for s, vals in scenarios.items():
-    x = np.array([[vals[0], vals[1], vals[2], state_encoded]])
-    profits[s] = model.predict(x)[0]
+# ================= HERO =================
+st.title("🚀 Indian Startup Profit Predictor")
+st.caption("AI-powered profit forecasting & startup decision dashboard")
+st.markdown("---")
 
-fig2, ax2 = plt.subplots(figsize=(6, 4))
-ax2.bar(profits.keys(), profits.values(), color=["#FFB74D", "#FFD54F", "#FF9800"])
-ax2.set_title("Profit Comparison Across Scenarios")
-ax2.set_ylabel("Predicted Profit (₹)")
-for i, val in enumerate(profits.values()):
-    ax2.text(i, val, f"₹{val:,.0f}", ha='center', va='bottom')
-st.pyplot(fig2)
+# ================= SIDEBAR =================
+st.sidebar.header("📊 Business Inputs")
 
-# ---------------- SMART ADVICE ENGINE ----------------
-st.subheader("🧠 Smart Advice Engine")
+rd_spend = st.sidebar.number_input("R&D Spend (₹)", 0.0, 1e9, 100000.0, step=5000.0)
+admin_spend = st.sidebar.number_input("Administration Spend (₹)", 0.0, 1e9, 120000.0, step=5000.0)
+marketing_spend = st.sidebar.number_input("Marketing Spend (₹)", 0.0, 1e9, 150000.0, step=5000.0)
+
+state = st.sidebar.selectbox("State", list(state_mapping.keys()))
+category = st.sidebar.selectbox(
+    "Startup Category",
+    ["Tech", "Food", "Healthcare", "Education"]
+)
+
+chart_type = st.sidebar.selectbox("Chart Type", ["Bar", "Line", "Scatter"])
+
+# ================= PROFIT PREDICTION =================
+state_encoded = state_mapping[state]
+X = np.array([[rd_spend, admin_spend, marketing_spend, state_encoded]])
+predicted_profit = model.predict(X)[0]
+
+st.success(f"💰 **Predicted Annual Profit:** ₹{predicted_profit:,.2f}")
+
+# ================= FINANCIAL HEALTH (MOVED UP) =================
+st.markdown("## 💼 Financial Health Dashboard")
+
+c1, c2, c3 = st.columns(3)
+
+monthly_expense = c1.number_input("Monthly Expenses (₹)", 0.0, 1e9, 200000.0)
+monthly_revenue = c1.number_input("Monthly Revenue (₹)", 0.0, 1e9, 250000.0)
+
+current_funding = c2.number_input("Available Funds (₹)", 0.0, 1e9, 1000000.0)
+customers = c2.number_input("Active Customers", 1, 1_000_000, 100)
+
+cac = c3.number_input("Customer Acquisition Cost (₹)", 0.0, 1e6, 5000.0)
+lifetime = c3.number_input("Customer Lifetime (months)", 1, 120, 12)
+
+burn_rate = monthly_expense
+runway = current_funding / burn_rate if burn_rate else 0
+ltv = (monthly_revenue / customers) * lifetime if customers else 0
+
+m1, m2, m3, m4 = st.columns(4)
+m1.metric("🔥 Burn Rate", f"₹{burn_rate:,.0f}")
+m2.metric("⏳ Runway", f"{runway:.1f} months")
+m3.metric("💎 LTV", f"₹{ltv:,.0f}")
+m4.metric("🎯 CAC", f"₹{cac:,.0f}")
+
+st.markdown("---")
+
+# ================= SMART ADVICE =================
+st.markdown("## 🧠 Smart Advice Engine")
 
 advice = []
 
-# Category-based advice
-if category == "Food":
-    advice.append("🍴 Food businesses in Maharashtra often face higher rent — allocate 5–10% extra for premises.")
-    advice.append("Focus on local supply chains and online delivery platforms.")
-elif category == "Tech":
-    advice.append("💻 Tech startups thrive on R&D — keep investing in product innovation.")
-    advice.append("Consider government grants for IT-based innovations.")
-elif category == "Education":
-    advice.append("📚 Education startups grow through digital outreach — invest in online presence.")
-    advice.append("In Karnataka or Delhi NCR, bilingual content helps expand reach.")
+if category == "Tech":
+    advice += [
+        "💻 Maintain consistent R&D investment.",
+        "Leverage India’s startup grants & incubators."
+    ]
+elif category == "Food":
+    advice += [
+        "🍴 Optimize inventory & delivery logistics.",
+        "Reduce wastage to improve margins."
+    ]
 elif category == "Healthcare":
-    advice.append("🩺 Healthcare startups face higher compliance costs — set aside funds for certifications.")
-elif category == "Retail":
-    advice.append("🛍️ Marketing is key — allocate at least 30% of spend to brand promotion.")
-elif category == "Finance":
-    advice.append("💰 Keep higher admin reserves for licensing and audits, especially in Delhi NCR.")
+    advice += [
+        "🩺 Prioritize compliance & certifications.",
+        "Build patient trust through transparency."
+    ]
+elif category == "Education":
+    advice += [
+        "📚 Focus on scalable digital platforms.",
+        "Invest in performance marketing."
+    ]
 
-# State-based advice
-if state in ["Maharashtra", "Delhi NCR"]:
-    advice.append("🏙️ High operational costs — focus on rent and administrative efficiency.")
-elif state in ["Karnataka", "Telangana"]:
-    advice.append("🚀 Great for tech startups — leverage government startup incentives.")
-elif state in ["Kerala", "Tamil Nadu"]:
-    advice.append("🌴 Local customer trust is vital — use community-centric marketing.")
-
-# Expense pattern advice
-if marketing_spend > rd_spend and marketing_spend > admin_spend:
-    advice.append("📢 Heavy marketing spend — track performance to ensure high ROI.")
+if marketing_spend > rd_spend:
+    advice.append("📢 Marketing-heavy strategy — ensure ROI tracking.")
 elif rd_spend > marketing_spend:
-    advice.append("🧪 Strong R&D focus — balance with visibility for faster product adoption.")
-elif admin_spend > rd_spend:
-    advice.append("🏢 High administrative costs — optimize management overheads.")
+    advice.append("🧪 Innovation-driven — improve brand visibility.")
 
-# Display advice
-if advice:
-    for tip in advice:
-        st.markdown(f"- {tip}")
+if state in ["Maharashtra", "Delhi NCR"]:
+    advice.append("🏙️ Control high operational costs.")
+elif state in ["Karnataka", "Telangana"]:
+    advice.append("🚀 Leverage strong tech ecosystems.")
+
+for tip in advice:
+    st.markdown(f"- {tip}")
+
+# ================= WHAT-IF =================
+st.markdown("## 🤔 What-If Analysis")
+
+c1, c2, c3 = st.columns(3)
+rd_change = c1.slider("R&D Change (%)", -50, 50, 0)
+admin_change = c2.slider("Admin Change (%)", -50, 50, 0)
+marketing_change = c3.slider("Marketing Change (%)", -50, 50, 0)
+
+X_adj = np.array([[
+    rd_spend * (1 + rd_change / 100),
+    admin_spend * (1 + admin_change / 100),
+    marketing_spend * (1 + marketing_change / 100),
+    state_encoded
+]])
+
+adjusted_profit = model.predict(X_adj)[0]
+st.info(f"📈 **Adjusted Profit:** ₹{adjusted_profit:,.2f}")
+
+# ================= VISUALS =================
+st.markdown("## 📈 Input Impact Analysis")
+
+features = ["R&D", "Admin", "Marketing", "Profit"]
+values = [rd_spend, admin_spend, marketing_spend, predicted_profit]
+
+fig, ax = plt.subplots(figsize=(6, 4))
+if chart_type == "Bar":
+    ax.bar(features, values)
+elif chart_type == "Line":
+    ax.plot(features, values, marker="o")
 else:
-    st.markdown("✅ Your spending looks balanced — maintain efficiency for steady growth.")
+    ax.scatter(features, values, s=100)
 
-# ---------------- Footer ----------------
+ax.set_ylabel("₹ Value")
+ax.set_title("Impact of Inputs on Profit")
+st.pyplot(fig)
+
+# ================= FOOTER =================
 st.markdown("---")
-st.caption("💡 Made with ❤️ by Kamya Kapoor | Enhanced with Smart AI Business Assistant 🚀")
+st.caption("Made  by **Kamya Kapoor** | Streamlit + Machine Learning")
+
+
 
 
 
