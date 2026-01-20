@@ -4,27 +4,47 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # ---------------- Page Setup ----------------
-st.set_page_config(page_title="Startup Profit Predictor", layout="centered")
+st.set_page_config(
+    page_title="Startup Profit Predictor",
+    page_icon="🚀",
+    layout="centered"
+)
 
-# ---------------- Simple Styling ----------------
+# ---------------- Styling ----------------
 st.markdown("""
 <style>
+/* App background */
+.stApp {
+    background: linear-gradient(to bottom right, #f8fafc, #eef2ff);
+}
+
+/* Card container */
 .card {
-    padding: 1.2rem;
-    border-radius: 10px;
-    background-color: #f9fafb;
+    background-color: #ffffff;
+    border-radius: 14px;
+    padding: 1.5rem;
     border: 1px solid #e5e7eb;
-    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    margin-bottom: 1.6rem;
 }
-.highlight {
-    font-size: 24px;
-    font-weight: 600;
-    color: #065f46;
-}
+
+/* Section titles */
 .section-title {
     font-size: 22px;
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    color: #111827;
+    margin-bottom: 1rem;
+}
+
+/* Profit highlight */
+.profit-card {
+    background: linear-gradient(to right, #ecfdf5, #d1fae5);
+    border-left: 6px solid #10b981;
+    padding: 1.5rem;
+    border-radius: 12px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #065f46;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -62,13 +82,13 @@ with col2:
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# ================= PREDICTION =================
+# ================= PROFIT =================
 state_encoded = state_mapping[state]
 X = np.array([[rd_spend, admin_spend, marketing_spend, state_encoded]])
 base_profit = model.predict(X)[0]
 
 st.markdown(
-    f'<div class="card highlight">💰 Predicted Profit: ₹{base_profit:,.2f}</div>',
+    f'<div class="profit-card">💰 Predicted Profit: ₹{base_profit:,.2f}</div>',
     unsafe_allow_html=True
 )
 
@@ -111,7 +131,8 @@ with right:
     fig, ax = plt.subplots(figsize=(4, 3))
     ax.bar(scenarios.keys(), profits)
     ax.set_ylabel("Profit (₹)")
-    ax.set_title("Scenario-wise Profit")
+    ax.set_facecolor("#f9fafb")
+    ax.grid(alpha=0.2)
     st.pyplot(fig)
 
 st.markdown('</div>', unsafe_allow_html=True)
@@ -144,18 +165,18 @@ st.markdown('<div class="section-title">🧠 Smart Advice Engine</div>', unsafe_
 advice = []
 
 if category == "Tech":
-    advice += ["Invest consistently in R&D", "Leverage incubators & grants"]
+    advice += ["Invest consistently in R&D", "Leverage incubators and startup grants"]
 elif category == "Food":
-    advice += ["Reduce wastage", "Optimize delivery logistics"]
+    advice += ["Reduce wastage", "Optimize delivery & supply chain"]
 elif category == "Healthcare":
-    advice += ["Ensure compliance", "Build trust with certifications"]
+    advice += ["Ensure regulatory compliance", "Build trust via certifications"]
 elif category == "Education":
-    advice += ["Focus on digital platforms", "Use SEO & performance marketing"]
+    advice += ["Scale through digital platforms", "Use SEO & performance marketing"]
 
 if marketing_spend > rd_spend:
-    advice.append("Marketing-heavy strategy — track ROI carefully")
+    advice.append("Marketing-heavy strategy — monitor ROI")
 elif rd_spend > marketing_spend:
-    advice.append("Innovation-led strategy — boost brand visibility")
+    advice.append("Innovation-led strategy — boost visibility")
 
 for tip in advice:
     st.markdown(f"- {tip}")
@@ -175,7 +196,9 @@ m4.metric("🎯 CAC", f"₹{cac:,.0f}")
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ================= FOOTER =================
-st.caption("Made with ❤️ by Kamya Kapoor | Streamlit + Machine Learning")
+st.caption("💡 Made with ❤️ by Kamya Kapoor | Streamlit + Machine Learning")
+
+
 
 
 
